@@ -2,26 +2,31 @@ import sys
 import pygame
 import numpy as np
 import math
+import time
 
 from boat import Boat
 from wind import Wind
 
-from config import BLUE, WHITE
+import config as cfg
 
 
 class GUI():
 
-    def __init__(self, width: int, height: int, pixel_per_meter: int, caption: str, max_fps: int):
+    def __init__(self, width: int, height: int, pixel_per_meter: int, bg_colour: list, caption: str):
+        # Graphics setup
         self.width = width
         self.height = height
-        self.max_fps = max_fps
         self.pixel_per_meter = pixel_per_meter
+        self.bg_colour = bg_colour
 
+        # Game setup
         pygame.init()
-        self.screen = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption(caption)
-        self.clock = pygame.time.Clock()
+        self.screen = pygame.display.set_mode((self.width, self.height))
         self.font = pygame.font.SysFont(None, 24)
+
+        #CLock setup
+        self.last_time = time.time()
 
     def check_running(self):
         for event in pygame.event.get():
@@ -32,7 +37,6 @@ class GUI():
     # Handle user input for movement
     def check_inputs(self, boat: Boat):
         keys = pygame.key.get_pressed()
-
         boat.inputs.up = keys[pygame.K_UP]
         boat.inputs.down = keys[pygame.K_DOWN]
         boat.inputs.left = keys[pygame.K_LEFT]
@@ -44,9 +48,9 @@ class GUI():
         pixels += np.array([self.width, self.height]) / 2
         return pixels
 
-
-    def draw(self, boat, wind: Wind):
-        self.screen.fill(BLUE)
+    def draw(self, boat: Boat, wind: Wind, fps: float, cpu_load: float):
+        # Draw background
+        self.screen.fill(self.bg_colour)
         
         # # Draw wind field
         # for i in range(wind.grid_size):
@@ -59,22 +63,25 @@ class GUI():
         # Draw boat
         C = np.array([
             [math.cos(boat.rot),-math.sin(boat.rot)],
-            [math.sin(boat.rot), math.cos(boat.rot)]])
-        
+            [math.sin(boat.rot), math.cos(boat.rot)]])        
         nodes = np.dot(C, np.transpose(boat.shape))
         nodes = np.add(nodes, boat.pos[:, np.newaxis])
+        pygame.draw.polygon(self.screen, cfg.WHITE, [self.meters_to_pixels(node) for node in nodes.T])
 
-        pygame.draw.polygon(self.screen, WHITE, [self.meters_to_pixels(node) for node in nodes.T])  # Simple boat as a rectangle
+        if cfg.PRINT_PERF:
+            current_time = time.time()
+            fps = 1 / (current_time - self.last_time)
+            self.last_time = current_time
 
-        # Display FPS
-        fps = self.clock.get_fps()
-        fps_text = self.font.render(f'FPS: {int(fps)}', True, WHITE)
-        self.screen.blit(fps_text, (10, 10))
+            # Display FPS
+            fps_text = self.font.render(f'FPS: {float(fps)}', True, cfg.WHITE)
+            self.screen.blit(fps_text, (10, 10))
+
+            cpu_load_text = self.font.render(f'CPU: {int(cpu_load*100)}%', True, cfg.WHITE)
+            self.screen.blit(cpu_load_text, (10, 30))
 
         pygame.display.flip()
 
-        # Limit frame rate to the specified max FPS
-        self.clock.tick(self.max_fps)
     
     def quit(self):
         pygame.quit()

@@ -5,28 +5,32 @@ WINDOW_HEIGHT = 600
 W_HALF = WINDOW_WIDTH / PIXEL_PER_METER / 2
 H_HALF = WINDOW_HEIGHT / PIXEL_PER_METER / 2
 CAPTION = "Sailing Simulator"
+PRINT_PERF = False      # Print performance data
 
 # Simulation
-MAX_FPS = 3000          # [Hz] Max FPS
+MAX_FPS = 60            # [Hz] Max FPS
 TIME_STEP = 0.01        # [s] Time step
 
 # Boat
-BOAT_M = 20             # [kg] Mass
-BOAT_J = 40             # [kg*m^2] Moment of inertia
-
-BOAT_b = 10             # [N*s/m] Linear damping
-BOAT_v = 40             # [] Angular damping
-
-BOAT_F = 1000           # [N] Motor force
+BOAT_M = 500            # [kg] Mass
+BOAT_J = 400            # [kg*m^2] Moment of inertia
+BOAT_b = 50             # [N*s/m] Linear damping
+BOAT_v = 100            # [] Angular damping
+BOAT_F = 500            # [N] Motor force
 BOAT_R = 30             # [N*s] Rudder force per longitudinal velocity
-BOAT_K = 100            # [N*s/m] Keel force per lateral velocity
+BOAT_K = 300            # [N*s/m] Keel force per lateral velocity
 
-BOAT_shape =[
-    [3,0],
-    [2,-1],
-    [-3,-1],
-    [-3,1],
-    [2,1]]              # [m] Boat shape
+BOAT_shape = [
+    [  -3,  0.7],       # stern portside
+    [-1.5,    1],
+    [ 0.5,    1],
+    [ 2.2,  0.5],
+    [   3,    0],       # bow
+    [ 2.2, -0.5],
+    [ 0.5,   -1],
+    [-1.5,   -1],
+    [  -3, -0.7],       # stern starboard
+]                       # [m] Boat shape
 
 # Wind
 WIND_GRID_SIZE = 2      # [m] Wind grid size

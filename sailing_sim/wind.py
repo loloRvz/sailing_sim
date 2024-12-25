@@ -1,5 +1,6 @@
 import numpy as np
-from config import WINDOW_WIDTH, WINDOW_HEIGHT
+
+import config as cfg
 
 class Wind():
 
@@ -24,7 +25,7 @@ class Wind():
 
     def get_wind_at(self, position: np.array):
         x, y = position
-        i = int((x + WINDOW_WIDTH / 2) / (WINDOW_WIDTH / self.grid_size))
-        j = int((y + WINDOW_HEIGHT / 2) / (WINDOW_HEIGHT / self.grid_size))
+        i = int((x + cfg.WINDOW_WIDTH / 2) / (cfg.WINDOW_WIDTH / self.grid_size))
+        j = int((y + cfg.WINDOW_HEIGHT / 2) / (cfg.WINDOW_HEIGHT / self.grid_size))
         return self.field[i, j]
 
